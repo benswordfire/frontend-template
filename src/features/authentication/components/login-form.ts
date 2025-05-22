@@ -1,13 +1,14 @@
-import { LitElement, PropertyValues, html } from 'lit';
-import { consume } from '@lit/context';
+import { LitElement, html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
-import { resetStyles } from '../../../styles/reset-styles';
-import { Router } from '@vaadin/router';
+import { consume } from '@lit/context';
 import { csrfContext } from '../contexts/csrf/csrf-context';
-import { LoginFormData } from '../types/LoginFormData';
+import { LoginFormData, LoginFormSchema } from '../types/LoginFormData';
+import { Router } from '@vaadin/router';
+import { resetStyles } from '../../../styles/reset-styles';
 
 @customElement('login-form')
 export class LoginForm extends LitElement {
+
   static styles = [resetStyles];
 
   @consume({ context: csrfContext, subscribe: true })
@@ -15,11 +16,21 @@ export class LoginForm extends LitElement {
 
   @state() private email: string = '';
   @state() private password: string = '';
+  @state() private errors: Partial<Record<keyof LoginFormData, string>> = {};
+
 
   @query('form') private form!: HTMLFormElement;
+  @query('form-alert') private formAlert!: HTMLElement;
 
-  connectedCallback() {
-    super.connectedCallback();
+  private extractFormData<T extends Record<string, any>>(form: HTMLFormElement): T {
+    const formData = new FormData(form);
+    const rawData = Object.fromEntries(formData.entries());
+
+    const data = Object.fromEntries(
+      Object.entries(rawData).map(([key, value]) => [key, typeof value === 'string' ? value : String(value)])
+    ) as T;
+
+    return data;
   }
 
 
@@ -32,57 +43,78 @@ export class LoginForm extends LitElement {
   private async handleSubmit(event: Event) {
     event.preventDefault();
 
-    const data: LoginFormData = { email: this.email, password: this.password, _csrf: this.token! };
+    const formData = this.extractFormData<LoginFormData>(this.form);
+
+    const parsed = LoginFormSchema.safeParse(formData);
+
+    if (!parsed.success) {
+      const fieldErrors: Partial<Record<keyof LoginFormData, string>> = {};
+      for (const error of parsed.error.errors) {
+        fieldErrors[error.path[0] as keyof LoginFormData] = error.message;
+      }
+
+      this.errors = fieldErrors;
+      return;
+    }
+
+    this.errors = {};
 
     try {
-      console.log(data);
       const response = await fetch('http://localhost:3000/api/v1/auth/login', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': this.token || ''
         },
-        body: JSON.stringify(data),
-        credentials: 'include',
+        body: JSON.stringify(parsed.data),
       });
-      console.log('LOGIN RES', response.headers)
+
       const result = await response.json();
-      console.log('LOGIN REZ', result)
+      
+      if (this.formAlert) {
+        this.formAlert.remove();
+      }
 
       if (!result.success) {
-        const message = document.createElement('form-alert');
-        message.setAttribute('alertType', 'error');
-        message.setAttribute('alertMessage', result.message);
-        this.form.prepend(message);
+        const alert = document.createElement('form-alert');
+        alert.setAttribute('alertType', result.success ? 'success' : 'error');
+        alert.setAttribute('alertMessage', result.message);
+        this.form.prepend(alert);
       }
 
       if (result.twoFactorRequired) {
         Router.go(`/auth/two-factor-auth?type=${result.twoFactorAuthType}`);
-      }
-
-      if (result.success && result.authorized) {
+      } else if (result.success && result.authorized) {
         window.dispatchEvent(new CustomEvent('auth-changed'));
         Router.go('/settings');
       }
+
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      const alert = document.createElement('form-alert');
+      alert.setAttribute('alertType', 'error');
+      alert.setAttribute('alertMessage', 'Something went wrong. Please try again.');
+      this.form.prepend(alert);
     }
   }
 
   render() {
     return html`
-      <form @submit=${this.handleSubmit}>
-        <h1 class="logo">jatti</h1>
+      <form @submit=${this.handleSubmit} novalidate>
+        <h1 class="logo">justcallmebro.</h1>
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" id="email" name="email" .value=${this.email} @input=${this.handleInput} />
+          <input type="email" id="email" name="email" .value=${this.email} @input=${this.handleInput} autocomplete="off" />
+          ${this.errors.email ? html`<input-error-message message="${this.errors.email}">` : null}
         </div>
         <div class="form-group">
-          <label for="password">Jelszó</label>
-          <input type="password" id="password" name="password" .value=${this.password} @input=${this.handleInput} />
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" .value=${this.password} @input=${this.handleInput} autocomplete="off" />
+          ${this.errors.password ? html`<input-error-message message="${this.errors.password}">` : null}
         </div>
-        <button type="submit" class="primary">Bejelentkezés</button>
-        <p style="font-size: 0.9rem; text-align: center;">Még nincs fiókod? <a href="/auth/registration" class="router-link">Regisztrálok most!</a></p>
+        <button type="submit" class="primary">C'mon! Let me call my bros!</button>
+        <p style="font-size: 0.9rem; text-align: center;">New here? <a href="/auth/registration" class="router-link">Create an account.</a></p>
       </form>
     `;
   }

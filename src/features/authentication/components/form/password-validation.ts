@@ -29,19 +29,19 @@ export class PasswordValidation extends LitElement {
   render() {
     const rules = [
       {
-        label: 'Legalább 8 karakter',
+        label: 'At least 8 characters',
         test: (password: string) => password.length >= 8,
       },
       {
-        label: 'Legalább 1 db nagy betű',
+        label: 'At least 1 uppercase letter',
         test: (password: string) => /[A-Z]/.test(password),
       },
       {
-        label: 'Legalább 1 db szám',
+        label: 'At least 1 number',
         test: (password: string) => /[0-9]/.test(password),
       },
       {
-        label: 'Legalább 1 db speciális karakter',
+        label: 'At least 1 special character',
         test: (password: string) => /[!@#$%^&*()_+|~-]/.test(password),
       },
     ];

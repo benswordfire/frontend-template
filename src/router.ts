@@ -21,8 +21,6 @@ const routes = [
   { path: '/auth/login', component: 'login-page', },
   { path: '/auth/registration', component: 'registration-page' },
   { path: '/auth/two-factor-auth', component: 'two-factor-auth-page'},
-  { path: '/messenger', component: 'messenger-page'},
-  { path: '/receiver', component: 'receiver-page'},
   { path: '/email-verification', component: 'email-verification-page'},
   { 
     path: '/dashboard', 
