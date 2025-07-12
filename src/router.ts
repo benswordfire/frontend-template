@@ -1,6 +1,7 @@
 import { Router } from '@vaadin/router';
 import './pages/auth/LoginPage';
 import './pages/auth/RegistrationPage';
+import './pages/settings/SettingsPage';
 
 const isAuthenticated = async () => {
   try {
@@ -20,26 +21,15 @@ const isAuthenticated = async () => {
 const routes = [
   { path: '/auth/login', component: 'login-page', },
   { path: '/auth/registration', component: 'registration-page' },
-  { path: '/auth/two-factor-auth', component: 'two-factor-auth-page'},
-  { path: '/email-verification', component: 'email-verification-page'},
-  { 
-    path: '/dashboard', 
-    component: 'dashboard-page',
-    action: async () => {
-      if (await isAuthenticated() === false) {
+  { path: '/friends', component: 'friends-page' },
+  { path: '/settings', component: 'settings-page', 
+    action: async () => { 
+      if (await isAuthenticated() === false) { 
         Router.go('/auth/login');
       }
     }
   },
-  { 
-    path: '/settings', 
-    component: 'settings-page',
-    action: async () => {
-      if (await isAuthenticated() === false) {
-        Router.go('/auth/login');
-      }
-    }
-  },
+  { path: '/chat', component: 'video-chat-page' }
 ];
 
 const router = new Router(document.querySelector('#app'));

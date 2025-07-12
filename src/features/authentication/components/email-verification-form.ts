@@ -13,29 +13,29 @@ export class EmailVerificationForm extends LitElement {
   @state() private token?: string;
 
   @state() private email: string = '';
-  @property() EmailVerificationToken: string
+  @state() private emailVerificationToken?: string = '';
 
   @query('form') private form!: HTMLFormElement;
 
   connectedCallback() {
     super.connectedCallback();
     const params = new URLSearchParams(window.location.search);
-    console.log(params)
-    this.EmailVerificationToken = params.get('token'); 
+    this.emailVerificationToken = params.get('token')!;
   }
 
-  private handleInput(e: Event) {
-    const target = e.target as HTMLInputElement;
-    if (target.name === 'email') this.email = target.value;
-    if (target.name === 'emailVerificationToken') this.EmailVerificationToken = target.value  
+  updated(changedProps: Map<string | number | symbol, unknown>) {
+    if (changedProps.has('token') && this.token && this.emailVerificationToken) {
+      this.handleSubmit();
+    }
   }
 
-  private async handleSubmit(event: Event) {
-    event.preventDefault();
 
-    const data: EmailVerificationFormData = { email: this.email, _csrf: this.token! };
+  private async handleSubmit() {
+    console.log('TÜKEN', this.token)
+    const data: EmailVerificationFormData = { token: this.emailVerificationToken!, _csrf: this.token! };
 
     try {
+      console.log(data)
       const response = await fetch('http://localhost:3000/api/v1/auth/email-verification', {
         method: 'POST',
         headers: {
@@ -46,6 +46,7 @@ export class EmailVerificationForm extends LitElement {
         credentials: 'include',
       });
       const result = await response.json();
+      console.log(result)
 
       if (result.success) {
         const message = document.createElement('form-alert');
@@ -61,19 +62,10 @@ export class EmailVerificationForm extends LitElement {
 
   render() {
     return html`
-      <form @submit=${this.handleSubmit}>
-        <h1>Welcome back!</h1>
-        <p style="color: #40505b">Login with your credentials.</p>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" .value=${this.email} @input=${this.handleInput} />
-        </div>
-        <div class="form-group">
-          <label for="emailVerificationToken">Email</label>
-          <input type="text" id="emailVerificationToken" name="emailVerificationToken" .value=${this.EmailVerificationToken} @input=${this.handleInput} />
-        </div>
-        <button type="submit" class="primary">Login</button>
-        <p>New here? <a href="/auth/registration" class="router-link">Create a new account</a></p>
+      <form>
+        <h1 class="logo">Success!</h1>
+        <p style="text-align: center; color: var(--secondary-color);">Successful verification, you can login to your account now!</p>
+        <a href="/auth/login" class="button-link">Proceed to login</a>
       </form>
     `;
   }

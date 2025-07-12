@@ -6,8 +6,8 @@ export class LoginPage extends LitElement {
 
   render() {
     return html`
-      <main style="height: 100dvh; display: flex; justify-content: center; align-items: center;">
-        <login-form></login-form>
+      <main style="height: 100dvh; display: flex; justify-content: space-between; align-items: center;">
+        <login-form style="width: 100%;"></login-form>
       </main>
     `;
   }

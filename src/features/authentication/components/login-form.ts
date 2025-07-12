@@ -60,7 +60,14 @@ export class LoginForm extends LitElement {
     this.errors = {};
 
     try {
-      const response = await fetch('http://localhost:3000/api/v1/auth/login', {
+      const hostname = window.location.hostname;
+
+      const API_URL =
+  hostname === 'localhost' || hostname === '127.0.0.1'
+    ? 'http://localhost:3000'
+    : 'http://192.168.0.59:3000';
+
+      const response = await fetch(`${API_URL}/api/v1/auth/login`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -102,7 +109,9 @@ export class LoginForm extends LitElement {
   render() {
     return html`
       <form @submit=${this.handleSubmit} novalidate>
-        <h1 class="logo">justcallmebro.</h1>
+        <h1 class="logo">kollme.</h1>
+                <sl-progress-ring value="50" style="--track-width: 6px; --indicator-width: 12px;"></sl-progress-ring>
+        <p style="text-align: center; color: var(--secondary-color);">Login with your credentials.</p>
         <div class="form-group">
           <label for="email">Email</label>
           <input type="email" id="email" name="email" .value=${this.email} @input=${this.handleInput} autocomplete="off" />
@@ -113,7 +122,7 @@ export class LoginForm extends LitElement {
           <input type="password" id="password" name="password" .value=${this.password} @input=${this.handleInput} autocomplete="off" />
           ${this.errors.password ? html`<input-error-message message="${this.errors.password}">` : null}
         </div>
-        <button type="submit" class="primary">C'mon! Let me call my bros!</button>
+        <button type="submit" class="primary">Let's go!</button>
         <p style="font-size: 0.9rem; text-align: center;">New here? <a href="/auth/registration" class="router-link">Create an account.</a></p>
       </form>
     `;

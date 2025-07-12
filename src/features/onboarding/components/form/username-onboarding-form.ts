@@ -2,13 +2,13 @@ import { consume } from '@lit/context';
 import { LitElement, html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
-import { resetStyles } from '../../../styles/reset-styles';
-import { authContext } from '../../authentication/contexts/authentication/auth-context';
-import { csrfContext } from '../../authentication/contexts/csrf/csrf-context';
-import { User } from '../../authentication/types/User';
+import { resetStyles } from '../../../../styles/reset-styles';
+import { authContext } from '../../../authentication/contexts/authentication/auth-context';
+import { csrfContext } from '../../../authentication/contexts/csrf/csrf-context';
+import { User } from '../../../authentication/types/User';
 
-@customElement('settings-form')
-export class SettingsForm extends LitElement {
+@customElement('username-onboarding-form')
+export class UsernameOnboardingForm extends LitElement {
   static styles = [resetStyles];
 
   @consume({ context: authContext, subscribe: true })
@@ -20,12 +20,10 @@ export class SettingsForm extends LitElement {
   @query('form') private form!: HTMLFormElement;
   @query('form-alert') private formAlert!: HTMLElement;
 
-
   private async handleSubmit(event: Event) {
     event.preventDefault();
     const formData = new FormData(this.form);
     const data = Object.fromEntries(formData.entries());
-    console.log(data)
     try {
       console.log(this.token);
       const response = await fetch(
@@ -64,21 +62,17 @@ export class SettingsForm extends LitElement {
   render() {
     return html`
       <form @submit=${this.handleSubmit}>
-        <h1>Settings</h1>
-        <p style="color: #40505b">Change your personal information.</p>
+        <h1 style="font-family: DynaPuff; font-size: 2rem; font-weight: 600; color: var(--color-primary); text-align: center;">Pick a username!</h1>
+        <p style="text-align: center; color: #848484; margin-bottom: 2rem; max-width: 300px; margin: 0 auto;">Make it iconic. Or weird. Or both. You can change it later if it gets too cringe.</p>
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" id="username" name="username" placeholder=${ifDefined(this.user?.username)} />
+          <input type="text" id="username" name="username"/>
+          <input-error-message message="Username is neccessary"></input-error-message>
         </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder=${ifDefined(this.user?.email)} />
+        <div style="display:flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 4rem;">
+          <button type="submit" class="secondary">Skip for now</button>
+          <button type="submit" class="primary"><a href="/onboarding/avatar" class="router-link">Next</a></button>
         </div>
-        <div class="form-group">
-          <label for="phone">Email</label>
-          <input type="text" id="phone" name="phone" placeholder=${ifDefined(this.user?.phoneNumber)} />
-        </div>
-        <button type="submit" class="primary">Update</button>
       </form>
     `;
   }

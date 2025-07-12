@@ -6,8 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jatty</title>
     <link rel="stylesheet" href="style.css">
+    <script type="module" src="./src/contexts/error/error-provider.ts"></script>
     <script type="module" src="./src/features/authentication/contexts/csrf/csrf-provider.ts"></script>
+    <script type="module" src="./src/contexts/fetch/fetch-provider.ts"></script>
     <script type="module" src="./src/features/authentication/contexts/authentication/auth-provider.ts"></script>
+    <script type="module" src="./src/features/messenger/context/call-provider.ts"></script>
+    <script type="module" src="./src/features/messenger/context/chat-provider.ts"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.87/dist/shoelace.js"></script>
     <script type="module" src="./src/features/authentication/components/login-form.ts"></script>
     <script type="module" src="./src/features/authentication/components/registration-form.ts"></script>
@@ -26,13 +30,36 @@
     <script type="module" src="./src/pages/auth/EmailVerificationPage.ts"></script>
     <script type="module" src="./src/features/authentication/components/email-verification-form.ts"></script>
     <script type="module" src="./src/components/notifications/input-error-message.ts"></script>
+    <script type="module" src="./src/features/onboarding/components/form/username-onboarding-form.ts"></script>
+    <script type="module" src="./src/pages/onboarding/UsernameOnboardingPage.ts"></script>
+    <script type="module" src="./src/features/onboarding/components/ui/progress-ring.ts"></script>
+    <script type="module" src="./src/features/onboarding/components/form/avatar-onboarding-form.ts"></script>
+    <script type="module" src="./src/pages/onboarding/AvatarOnboardingPage.ts"></script>
+    <script type="module" src="./src/features/messenger/messenger-element.ts"></script>
+    <script type="module" src="./src/features/messenger/receiver-element.ts"></script>
+    <script type="module" src="./src/pages/messenger/MessengerPage.ts"></script>
+    <script type="module" src="./src/pages/messenger/ReceiverPage.ts"></script>
+    <script type="module" src="./src/features/friends/friends-list.ts"></script>
+    <script type="module" src="./src/features/friends/friends-list-element.ts"></script>
+    <script type="module" src="./src/pages/friends/FriendsPage.ts"></script>
+    <script type="module" src="./src/features/messenger/call-button.ts"></script>
+    <script type="module" src="./src/components/layout/header/global-header.ts"></script>
+    <script type="module" src="./src/components/notifications/call-alert.ts"></script>
+    <script type="module" src="./src/features/messenger/components/video-chat.ts"></script>
+    <script type="module" src="./src/pages/messenger/VideoChatPage.ts"></script>
   </head>
   <body>
+  <error-provider>
     <csrf-provider>
-      <auth-provider>
-        <div id="app"></div>
-      </auth-provider>
+      <fetch-provider>
+        <auth-provider>
+          <call-provider>
+            <div id="app"></div>
+          </call-provider>
+        </auth-provider>
+      </fetch-provider>
     </csrf-provider>
+  </error-provider>
   </body>
   
 </html>

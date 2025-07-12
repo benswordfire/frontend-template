@@ -4,6 +4,8 @@ import { consume } from '@lit/context';
 import { csrfContext } from '../contexts/csrf/csrf-context';
 import { resetStyles } from '../../../styles/reset-styles';
 import { RegistrationFormData, RegistrationFormSchema } from '../types/RegistrationFormData';
+import { FetchContext, fetchContext } from '../../../contexts/fetch/fetch-context';
+import { ApiResult } from '../../../contexts/fetch/types/ApiResult';
 
 @customElement('registration-form')
 export class RegistrationForm extends LitElement {
@@ -11,12 +13,14 @@ export class RegistrationForm extends LitElement {
   static styles = [resetStyles];
 
   @consume({ context: csrfContext, subscribe: true })
-  @state() private token: string | '' = '';
+  private _csrfToken!: string;
+
+  @consume({ context: fetchContext, subscribe: true })
+  @state() private fetchContext!: FetchContext;
 
   @state() private email: string = '';
   @state() private password: string = '';
   @state() private errors: Partial<Record<keyof RegistrationFormData, string>> = {};
-
 
   @query('form') private form!: HTMLFormElement;
   @query('form-alert') private formAlert!: HTMLElement;
@@ -63,7 +67,7 @@ export class RegistrationForm extends LitElement {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': this.token,
+          'X-CSRF-Token': this._csrfToken,
         },
         body: JSON.stringify(parsed.data),
       });
@@ -88,10 +92,59 @@ export class RegistrationForm extends LitElement {
     }
   }
 
+  private readonly _handleSubmit = async (event: Event) => {
+    event.preventDefault();
+
+    const formData = this.extractFormData<RegistrationFormData>(this.form);
+
+    const parsed = RegistrationFormSchema.safeParse(formData);
+
+    if (!parsed.success) {
+      const fieldErrors: Partial<Record<keyof RegistrationFormData, string>> = {};
+      for (const error of parsed.error.errors) {
+        fieldErrors[error.path[0] as keyof RegistrationFormData] = error.message;
+      }
+
+      this.errors = fieldErrors;
+      return;
+    }
+
+    this.errors = {};
+
+    try {
+      const result: ApiResult | undefined = await this.fetchContext.fetchWithAuth({
+        endpoint: 'register',
+        options: { method: 'POST' },
+        data: parsed.data
+      });
+
+      if (result) {
+        console.log('REG?RES:', result)
+        if (this.formAlert) {
+          this.formAlert.remove();
+        }
+  
+        const alert = document.createElement('form-alert');
+        alert.setAttribute('alertType', result.success ? 'success' : 'error');
+        alert.setAttribute('alertMessage', result.message ? result.message : '');
+        this.form.prepend(alert);
+        
+      }
+    } catch (error) {
+      console.error(error);
+      const alert = document.createElement('form-alert');
+      alert.setAttribute('alertType', 'error');
+      alert.setAttribute('alertMessage', 'Something went wrong. Please try again.');
+      this.form.prepend(alert);
+    }
+
+  }
+
   render() {
     return html`
-      <form @submit=${this.handleSubmit}>
-        <h1 class="logo">justcallmebro.</h1>
+      <form @submit=${this._handleSubmit} novalidate>
+        <h1 class="logo">kollme.</h1>
+        <p style="text-align: center; color: var(--secondary-color);">Sign up and start calling your bros.</p>
         <div class="form-group">
           <label for="email">E-mail</label>
           <input type="email" id="email" name="email" .value=${this.email} @input=${this.handleInput} autocomplete="off" />

@@ -2,17 +2,18 @@ import { z } from 'zod'
 
 export const UserSchema = z.object({
   id: z.string(),
+  email: z.string().email(),
   username: z.string().optional(),
-  email: z.string().email({ message: 'Email is required!' }),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-  isEmailVerified: z.date(),
-  phoneNumber: z.string().optional(),
-  isPhoneNumberVerified: z.date().optional(),
-  passwordHash: z.string({ message: 'Password is required!' }).min(6, { message: 'Password must be at least 6 characters!' }),
-  isTwoFactorEnabled: z.enum(['disabled', 'email', 'sms']).default('disabled'),
-  createdAt: z.date(),
-  updatedAt: z.date()
-})
+  firstName: z.string().nullable().optional(),
+  lastName: z.string().nullable().optional(),
+  phoneNumber: z.string().nullable().optional(),
+  isPhoneNumberVerified: z
+    .preprocess(val => val ? new Date(val) : null, z.date().nullable()),
+  isEmailVerified: z.preprocess((val) => new Date(val as string), z.date()), 
+  passwordHash: z.string().optional(),
+  isTwoFactorEnabled: z.enum(['email', 'disabled', 'sms']),
+  createdAt: z.preprocess((val) => new Date(val as string), z.date()),
+  updatedAt: z.preprocess((val) => new Date(val as string), z.date())
+});
 
 export type User = z.infer<typeof UserSchema>;

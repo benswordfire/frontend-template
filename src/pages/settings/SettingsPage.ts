@@ -5,12 +5,15 @@ import { customElement } from 'lit/decorators.js';
 export class SettingsPage extends LitElement {
   render() {
     return html`
-      <div style="min-height: 100vh; min-height: 100dvh; display: grid; grid-template-columns: auto 1fr;">
-        <global-sidebar></global-sidebar>
-        <main style="display: flex;">
-          <settings-form></settings-form>
-        </main>
-      </div>
+      <global-header></global-header>
+      <main style="
+      min-height: 100vh; 
+      min-height: 100dvh; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center;">
+        <settings-form style="width: 100%;"></settings-form>
+      </main>
     `;
   }
 }

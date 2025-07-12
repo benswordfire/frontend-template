@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const EmailVerificationFormSchema = z.object({
-  email: z.string().email({ message: 'Email is required!' }),
+  token: z.string(),
   _csrf: z.string()
 })
 

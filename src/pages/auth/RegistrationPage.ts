@@ -7,7 +7,7 @@ export class RegistrationPage extends LitElement {
   render() {
     return html`
       <main style="height: 100dvh; display: flex; justify-content: center; align-items: center;">
-        <registration-form></registration-form>
+        <registration-form style="width: 100%;"></registration-form>
       </main>
     `;
   }

@@ -22,7 +22,7 @@ export class InputErrorMessage extends LitElement {
   render() {
     return html`
       <p>
-        <sl-icon name="x-circle-fill"></sl-icon>
+        <sl-icon name="exclamation-circle-fill"></sl-icon>
         ${this.message}
       </p>
     `;

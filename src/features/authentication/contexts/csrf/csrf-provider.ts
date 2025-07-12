@@ -22,9 +22,9 @@ export class CsrfProvider extends LitElement {
         headers: { 'Content-Type': 'application/json' }
       })
       const result = await response.json();
+      console.log(result.csrfToken)
       this.token = result.csrfToken;
       this.loading = false;
-      console.log('TOKEN FETCHED:', this.token)
     } catch (error) {
       console.log(error);
     } finally {

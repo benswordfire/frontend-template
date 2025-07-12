@@ -19,6 +19,8 @@ export class MessengerElement extends LitElement {
   @state() private message: string = ''
   @state() private messages: Message[] = []
 
+  @state() private offer = {};
+
   handleMessageInput(e: Event) {
     this.message = (e.target as HTMLInputElement).value;
   }
@@ -41,6 +43,7 @@ export class MessengerElement extends LitElement {
 
     this.lc.onicecandidate = () => {
       console.log('Offer SDP:', JSON.stringify(this.lc.localDescription));
+      this.offer = JSON.stringify(this.lc.localDescription)
     };
 
     const offer = await this.lc.createOffer();
@@ -69,6 +72,7 @@ export class MessengerElement extends LitElement {
   render() {
     return html`
       <div>
+        <friends-list callOffer=${this.offer}></friends-list>
         <h2 style="text-align: center;">Messenger</h2>
         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
         ${this.messages.map((text) => {

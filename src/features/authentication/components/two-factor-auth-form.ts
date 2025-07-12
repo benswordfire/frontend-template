@@ -12,12 +12,12 @@ export class TwoFactorAuthForm extends LitElement {
     css`
       form div {
         display: flex;
+        gap: 1rem;
         justify-content: space-between;
-        gap: 0.5rem;
       }
       input[type='text'] {
-        width: 3rem;
-        height: 3rem;
+        width: 4rem;
+        height: 4rem;
         text-align: center;
       }
     `,
@@ -133,70 +133,68 @@ export class TwoFactorAuthForm extends LitElement {
 
   render() {
     return html`
-      <div id="container">
-        <form @submit=${this.handleSubmit}>
-          <h1 class="logo">jatti</h1>
-          <h3>Two Factor Authentication</h3>
-          <div>
-            <input
-              type="text"
-              id="tokenPartOne"
-              name="tokenPartOne"
-              .value="${this.tokenPartOne}"
-              @input="${this.handleInput}"
-              maxlength="1"
-              autocomplete="off"
-            />
-            <input
-              type="text"
-              id="tokenPartTwo"
-              name="tokenPartTwo"
-              .value="${this.tokenPartTwo}"
-              @input="${this.handleInput}"
-              maxlength="1"
-              autocomplete="off"
-            />
-            <input
-              type="text"
-              id="tokenPartThree"
-              name="tokenPartThree"
-              .value="${this.tokenPartThree}"
-              @input="${this.handleInput}"
-              maxlength="1"
-              autocomplete="off"
-            />
-            <input
-              type="text"
-              id="tokenPartFour"
-              name="tokenPartFour"
-              .value="${this.tokenPartFour}"
-              @input="${this.handleInput}"
-              maxlength="1"
-              autocomplete="off"
-            />
-            <input
-              type="text"
-              id="tokenPartFive"
-              name="tokenPartFive"
-              .value="${this.tokenPartFive}"
-              @input="${this.handleInput}"
-              maxlength="1"
-              autocomplete="off"
-            />
-            <input
-              type="text"
-              id="tokenPartSix"
-              name="tokenPartSix"
-              .value="${this.tokenPartSix}"
-              @input="${this.handleInput}"
-              maxlength="1"
-              autocomplete="off"
-            />
-          </div>
-          <a>Didn't recieve code?</a>
-          <button type="submit" class="primary">E-mail hitelesítése</button>
-        </form>
-      </div>
+      <form @submit=${this.handleSubmit}>
+        <h1 class="logo">kollme.</h1>
+        <p style="text-align: center; color: var(--secondary-color);">We've sent a secret code to your email address!</p>
+        <div>
+          <input
+            type="text"
+            id="tokenPartOne"
+            name="tokenPartOne"
+            .value="${this.tokenPartOne}"
+            @input="${this.handleInput}"
+            maxlength="1"
+            autocomplete="off"
+          />
+          <input
+            type="text"
+            id="tokenPartTwo"
+            name="tokenPartTwo"
+            .value="${this.tokenPartTwo}"
+            @input="${this.handleInput}"
+            maxlength="1"
+            autocomplete="off"
+          />
+          <input
+            type="text"
+            id="tokenPartThree"
+            name="tokenPartThree"
+            .value="${this.tokenPartThree}"
+            @input="${this.handleInput}"
+            maxlength="1"
+            autocomplete="off"
+          />
+          <input
+            type="text"
+            id="tokenPartFour"
+            name="tokenPartFour"
+            .value="${this.tokenPartFour}"
+            @input="${this.handleInput}"
+            maxlength="1"
+            autocomplete="off"
+          />
+          <input
+            type="text"
+            id="tokenPartFive"
+            name="tokenPartFive"
+            .value="${this.tokenPartFive}"
+            @input="${this.handleInput}"
+            maxlength="1"
+            autocomplete="off"
+          />
+          <input
+            type="text"
+            id="tokenPartSix"
+            name="tokenPartSix"
+            .value="${this.tokenPartSix}"
+            @input="${this.handleInput}"
+            maxlength="1"
+            autocomplete="off"
+          />
+        </div>
+        <button type="submit" class="primary">Confirm</button>
+        <p style="font-size: 0.9rem; text-align: center;">Didn't get a code? <a href="/auth/login" class="router-link">Resend it in 1:00</a></p>
+      </form>
     `;
   }
 }

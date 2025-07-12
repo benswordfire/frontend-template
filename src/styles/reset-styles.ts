@@ -70,12 +70,15 @@ label {
 }
 
 form {
-  width: 480px;
+  max-width: 480px;
+  width: 90%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
+
+
 
 .form-group {
   display: flex;
@@ -84,11 +87,11 @@ form {
 
 input, input[type="text"] {
   width: 100%;
-  padding: 0.75rem;
+  padding: 1rem;
   border: 2px solid #DDDDDD;
   border-radius: 0.25rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-secondary);
   background-color: #DDDDDD;
 }
@@ -105,18 +108,37 @@ select {
   font-size: 1rem;
 }
 
-button.primary {
+button.primary, .button-link {
   color: #F2ECFF;
   background-color: var(--color-primary);
   width: 100%;
   padding: 1rem;
-  border: none;
+  border: 2px solid var(--color-primary);
   border-radius: 0.25rem;
   font-family: 'DynaPuff', 'Inter';
   font-size: 1rem;
   font-weight: 400;
+  text-align: center;
+  text-decoration: none;
   cursor: pointer;
 }
+
+button.secondary {
+  color: #707070;
+  background-color: #DDDDDD;
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #DDDDDD;
+  border-radius: 0.25rem;
+  font-family: 'DynaPuff', 'Inter';
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
 
 .router-link {
   font-size: 0.875rem;
