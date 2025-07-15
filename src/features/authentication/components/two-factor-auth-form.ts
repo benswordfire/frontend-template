@@ -114,7 +114,7 @@ export class TwoFactorAuthForm extends LitElement {
     formData._csrf = this.token;
     try {
       const response = await fetch(
-        'http://localhost:3000/api/v1/auth/two-factor-auth',
+        'http://localhost:3000/api/v1/auth/login/two-factor',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

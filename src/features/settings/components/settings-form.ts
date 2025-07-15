@@ -6,13 +6,14 @@ import { resetStyles } from '../../../styles/reset-styles';
 import { authContext } from '../../authentication/contexts/authentication/auth-context';
 import { csrfContext } from '../../authentication/contexts/csrf/csrf-context';
 import { User } from '../../authentication/types/User';
+import { profileContext } from '../../profile/context/profile-context';
 
 @customElement('settings-form')
 export class SettingsForm extends LitElement {
   static styles = [resetStyles];
 
-  @consume({ context: authContext, subscribe: true })
-  @state() user: User | null = null;
+  @consume({ context: profileContext, subscribe: true })
+  @state() private profile: User | null = null;
 
   @consume({ context: csrfContext, subscribe: true })
   @state() private token: string | '' = '';
@@ -68,11 +69,11 @@ export class SettingsForm extends LitElement {
         <p style="color: #40505b">Change your personal information.</p>
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" id="username" name="username" placeholder=${ifDefined(this.user?.username)} />
+          <input type="text" id="username" name="username" placeholder=${ifDefined(this.profile?.username)} />
         </div>
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder=${ifDefined(this.user?.email)} />
+          <input type="email" id="email" name="email" placeholder=${ifDefined(this.profile?.email)} />
         </div>
         <div class="form-group">
           <label for="phone">Email</label>

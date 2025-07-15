@@ -33,6 +33,16 @@ export class GlobalHeader extends LitElement {
   @consume({ context: authContext, subscribe: true })
   @state() user: User | null = null;
   
+  private async _logout() {
+    try {
+      const response = await fetch('http://localhost:3000/api/v1/auth/logout', {
+        method: 'GET'
+      });
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   render() {
     return html `
     <header style="
@@ -54,6 +64,7 @@ export class GlobalHeader extends LitElement {
           <li>
             <a href="/settings">settings</a>
           </li>
+        <a href="http://localhost:3000/api/v1/auth/logout">Exit</a>
         <sl-icon name="person-fill" style="height: 24px; width: 24px; background: #DDDDDD; padding: 0.5rem; border-radius: 50%"></sl-icon>
         </ul>
       </nav>

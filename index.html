@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <script type="module" src="./src/contexts/error/error-provider.ts"></script>
     <script type="module" src="./src/features/authentication/contexts/csrf/csrf-provider.ts"></script>
+    <script type="module" src="./src/features/profile/context/profile-provider.ts"></script>
     <script type="module" src="./src/contexts/fetch/fetch-provider.ts"></script>
     <script type="module" src="./src/features/authentication/contexts/authentication/auth-provider.ts"></script>
     <script type="module" src="./src/features/messenger/context/call-provider.ts"></script>
@@ -52,11 +53,13 @@
   <error-provider>
     <csrf-provider>
       <fetch-provider>
-        <auth-provider>
-          <call-provider>
-            <div id="app"></div>
-          </call-provider>
-        </auth-provider>
+        <profile-provider>
+          <auth-provider>
+            <call-provider>
+              <div id="app"></div>
+            </call-provider>
+          </auth-provider>
+        </profile-provider>
       </fetch-provider>
     </csrf-provider>
   </error-provider>

@@ -26,7 +26,7 @@ export class ErrorProvider extends LitElement {
       ...this.errorContext.errors, 
       newError
     ];
-    console.error(`[${error.source}]`, error.message, error);
+    console.error(error);
     
   };
   

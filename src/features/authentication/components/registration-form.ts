@@ -62,7 +62,8 @@ export class RegistrationForm extends LitElement {
     this.errors = {};
 
     try {
-      const response = await fetch('http://localhost:3000/api/v1/register', {
+      console.log('SENT:', parsed.data)
+      const response = await fetch('http://localhost:3000/api/v1/auth/register', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -71,7 +72,6 @@ export class RegistrationForm extends LitElement {
         },
         body: JSON.stringify(parsed.data),
       });
-
       const result = await response.json();
 
       if (this.formAlert) {
@@ -113,7 +113,7 @@ export class RegistrationForm extends LitElement {
 
     try {
       const result: ApiResult | undefined = await this.fetchContext.fetchWithAuth({
-        endpoint: 'register',
+        endpoint: 'auth/register',
         options: { method: 'POST' },
         data: parsed.data
       });

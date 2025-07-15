@@ -4,7 +4,6 @@ import { consume, provide } from '@lit/context';
 import { authContext, User } from './auth-context';
 import { ErrorContext, errorContext } from '../../../../contexts/error/error-context';
 import { fetchContext, FetchContext } from '../../../../contexts/fetch/fetch-context';
-import { UserApiResponseSchema, UserSchema } from '../../types/User';
 
 @customElement('auth-provider')
 export class AuthProvider extends LitElement {
@@ -22,11 +21,10 @@ export class AuthProvider extends LitElement {
   private readonly _checkUserAuthentication = async (): Promise<User | undefined> => {
     try {
       const response = await this.fetchContext.fetchWithAuth<User>({ 
-        endpoint: 'current-user', 
+        endpoint: 'user/profile', 
         options: { method: 'GET' },
-        schema: UserSchema
       });
-
+      console.log('EZ GECI:', response)
       return this.user = response as User;
       
     } catch (error: any) {

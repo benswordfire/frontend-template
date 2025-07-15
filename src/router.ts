@@ -5,7 +5,7 @@ import './pages/settings/SettingsPage';
 
 const isAuthenticated = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/v1/current-user', {
+    const response = await fetch('http://localhost:3000/api/v1/auth/status', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
@@ -21,6 +21,7 @@ const isAuthenticated = async () => {
 const routes = [
   { path: '/auth/login', component: 'login-page', },
   { path: '/auth/registration', component: 'registration-page' },
+  { path: '/auth/two-factor-auth', component: 'two-factor-auth-page' },
   { path: '/friends', component: 'friends-page' },
   { path: '/settings', component: 'settings-page', 
     action: async () => { 
