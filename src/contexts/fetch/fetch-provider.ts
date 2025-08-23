@@ -8,8 +8,7 @@ import { errorContext, ErrorContext } from '../error/error-context';
 @customElement('fetch-provider')
 export class FetchProvider extends LitElement {
   private readonly API_URL = import.meta.env.VITE_BASE_URL;
-  @provide({ context: fetchContext })
-  
+
   @consume({ context: csrfContext, subscribe: true })
   @state() private _csrfToken: string = '';
 
@@ -66,6 +65,12 @@ export class FetchProvider extends LitElement {
       return { success: false, message: 'Network error' };
     }
   };
+
+  @provide({ context: fetchContext })
+  @state() public fetchContext = {
+    requestWithAuth: this.requestWithAuth.bind(this),
+    _requestWithoutAuth: this.requestWithoutAuth.bind(this),
+  }
   
   render() {
     return html `<slot></slot>`
