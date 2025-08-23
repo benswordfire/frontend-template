@@ -1,7 +1,9 @@
-import { LitElement, html } from 'lit';
+import { LitElement, PropertyValues, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { provide } from '@lit/context';
+import { consume, provide } from '@lit/context';
 import { csrfContext } from './csrf-context';
+import { errorContext, ErrorContext } from '../../../../contexts/error/error-context';
+import { fetchContext, FetchContext } from '../../../../contexts/fetch/fetch-context';
 
 @customElement('csrf-provider')
 export class CsrfProvider extends LitElement {
@@ -9,28 +11,54 @@ export class CsrfProvider extends LitElement {
   @state() public token: string | null = null;
   @state() public loading = true;
 
+  @consume({ context: fetchContext, subscribe: true })
+  @state() fetchContext!: FetchContext;
+
+  @consume({ context: errorContext, subscribe: true })
+  @state() errorContext!: ErrorContext;
+
   connectedCallback() {
     super.connectedCallback();
-    this.getCsrfToken();
+    this._fetchCsrfToken();
+    window.addEventListener('auth-changed', this._handleCsrfTokenUpdate);
+  };
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('auth-changed', this._handleCsrfTokenUpdate);
+  };
+
+  protected updated(_changedProperties: PropertyValues): void {
+    if (_changedProperties.has('token')) {
+      console.log('Token updated in provider:', this.token)
+    }
   }
 
-  async getCsrfToken () {
+  private _handleCsrfTokenUpdate = (event: Event) => {
+    const customEvent = event as CustomEvent<{ token: string }>;
+    this.token = customEvent.detail.token;
+    console.log('NEW TOKEN:', this.token)
+    this.requestUpdate();
+  };
+
+  private async _fetchCsrfToken () {
     try {
-      const response = await fetch('http://localhost:3000/api/v1/csrf-token', {
+      const response = await fetch('http://147.93.56.188:3000/api/v1/csrf-token', {
         method: 'GET',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' }
       })
       const result = await response.json();
-      console.log(result.csrfToken)
       this.token = result.csrfToken;
+      console.log('OLD TOKEN:', this.token)
       this.loading = false;
     } catch (error) {
       console.log(error);
     } finally {
       this.loading = false;
     }
-  }
+  };
+
   render() {
     return this.loading
       ? html`<p>Loading...</p>`

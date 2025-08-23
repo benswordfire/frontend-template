@@ -3,7 +3,6 @@ import { LitElement, html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { resetStyles } from '../../../styles/reset-styles';
-import { authContext } from '../../authentication/contexts/authentication/auth-context';
 import { csrfContext } from '../../authentication/contexts/csrf/csrf-context';
 import { User } from '../../authentication/types/User';
 import { profileContext } from '../../profile/context/profile-context';
@@ -28,9 +27,9 @@ export class SettingsForm extends LitElement {
     const data = Object.fromEntries(formData.entries());
     console.log(data)
     try {
-      console.log(this.token);
+      console.log('SETTINGS TÓKEN:', this.token)
       const response = await fetch(
-        'http://localhost:3000/api/v1/update-settings',
+        'http://localhost:3000/api/v1/user/update',
         {
           method: 'PATCH',
           headers: {

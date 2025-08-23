@@ -4,6 +4,7 @@ import { resetStyles } from '../../styles/reset-styles';
 import { consume } from '@lit/context';
 import { CallContext, callContext } from '../../features/messenger/context/call-context';
 import { IncomingCallOffer } from '../../features/messenger/types/IncomingCallOffer';
+import { chatContext, ChatContext } from '../../features/messenger/context/chat-context';
 
 @customElement('call-alert')
 export class CallAlert extends LitElement {
@@ -66,8 +67,8 @@ export class CallAlert extends LitElement {
   }
   `];
 
-  @consume({ context: callContext, subscribe: true })
-  @state() callContext?: CallContext;
+  @consume({ context: chatContext, subscribe: true })
+  @state() chatContext?: ChatContext;
   
   @property({ type: Object })  
   incomingCallOffer: IncomingCallOffer | null = null;
@@ -77,11 +78,11 @@ export class CallAlert extends LitElement {
   
 
 
-  private async acceptCall() {
-    if (!this.callContext || !this.incomingCallOffer) return;
+   private async acceptCall() {
+    if (!this.chatContext || !this.incomingCallOffer) return;
     
     try {
-      await this.callContext.createCallAnswer(this.incomingCallOffer);
+      await this.chatContext.createCallAnswer(this.incomingCallOffer);
 
     } catch (error) {
       console.error('Failed to answer call:', error);
@@ -89,7 +90,7 @@ export class CallAlert extends LitElement {
   }
 
   private async setupLocalVideo() {
-    if (!this.callContext?.localStream || !this.container) return;
+    if (!this.chatContext?.localStream || !this.container) return;
     
     // Create video element if it doesn't exist
     if (!this.localVideo) {
@@ -107,15 +108,15 @@ export class CallAlert extends LitElement {
     }
 
     // Attach stream
-    this.localVideo.srcObject = this.callContext.localStream;
+    this.localVideo.srcObject = this.chatContext.localStream;
   }
-
+  
   protected updated(changedProperties: Map<string, unknown>) {
-    if (changedProperties.has('callContext') && this.callContext?.localStream) {
+    if (changedProperties.has('callContext') && this.chatContext?.localStream) {
       this.setupLocalVideo();
     }
   }
-    
+
   render() {
     return html `
     <div class="call-alert-container">
@@ -123,7 +124,7 @@ export class CallAlert extends LitElement {
         <div class="caller-image">
           <sl-icon name="person-fill"></sl-icon>
         </div>
-        <p class="caller-name">${this.callContext?.incomingCallOffer?.callerName}</p>
+        <p class="caller-name">${this.incomingCallOffer?.callerName}</p>
         <p style="text-align: center; font-size: 12px; font-weight: 400;">Incoming call</p>
       </div>
       <div class="call-buttons">

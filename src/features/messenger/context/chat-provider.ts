@@ -6,136 +6,229 @@ import { User } from '../../authentication/types/User';
 import { chatContext } from './chat-context';
 import { OutgoingCallOffer } from '../types/OutgoingCallOffer';
 import { csrfContext } from '../../authentication/contexts/csrf/csrf-context';
+import { profileContext } from '../../profile/context/profile-context';
+import { IncomingCallOffer } from '../types/IncomingCallOffer';
+import { IncomingCallAnswer } from '../types/IncomingCallAnswer';
 
 @customElement('chat-provider')
 export class ChatProvider extends LitElement {
+
   @provide({ context: chatContext })
   @state() public chatContext = {
     createCallOffer: this.createCallOffer.bind(this),
+    createCallAnswer: this.createCallAnswer.bind(this),
+    localStream: null as MediaStream | null,
+    remoteStream: null as MediaStream | null,
   }
 
-  @consume({ context: authContext, subscribe: true })
-  @state() private user: User | null = null;
+  @consume({ context: profileContext, subscribe: true })
+  @state() private profile: User | null = null;
 
   @consume({ context: csrfContext, subscribe: true })
   @state() private token: string | null = null;
 
-  private lc: RTCPeerConnection | null = null;
   private config: object = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]};
-  private offer: RTCSessionDescription | null = null;
+  private lc: RTCPeerConnection | null = null;
+  private rc: RTCPeerConnection | null = null;
+  public offer: RTCSessionDescription | null = null;
+  public answer: RTCSessionDescription | null = null;
+  private incomingCallOffer: IncomingCallOffer | null = null;
+  private incomingCallAnswer: IncomingCallAnswer | null = null;
+  @state() incomingCall: boolean = false;
+  @state() outgoingCall: boolean = false;
+  @state() callInProgress: boolean = false;
 
   protected updated(changedProperties: Map<string, unknown>) {
-    if (changedProperties.has('user') || changedProperties.has('token')) {
-      this.monitorChatTraffic();
+    if (changedProperties.has('profile') || changedProperties.has('token')) {
+      this.monitorCallTraffic();
+    }
+  }
+  
+  private readonly monitorCallTraffic = () => {
+    if (!this.profile) return;
+    try {
+      const stream = new EventSource(`http://localhost:3000/api/v1/calls/${this.profile?.id}`);
+
+      stream.addEventListener('offer', (event: MessageEvent) => {
+        this.incomingCall = true;
+        console.log(this.incomingCall)
+        const data = JSON.parse(event.data);
+        console.log('INCOMING CALL:', data);
+        this.incomingCallOffer = data;
+      });
+
+      stream.addEventListener('answer', async (event: MessageEvent) => {
+        const data = JSON.parse(event.data);
+        console.log('INCOMING ANSWER:', data);
+        this.incomingCallAnswer = data;
+        if (this.incomingCallAnswer) {
+          await this.lc?.setRemoteDescription(this.incomingCallAnswer.sdp);
+          console.log('BESZETTELI', this.incomingCallAnswer.sdp)
+          this.callInProgress = true;
+          this.outgoingCall = false;
+        }
+      });
+
+      stream.onmessage = (event: MessageEvent) => {
+        console.log('SSE Message:', event.data); 
+      };
+    } catch (error) {
+
     }
   }
 
-  private async monitorChatTraffic() {
-    if (!this.user) return;
-
-    const stream = new EventSource(`http://localhost:3000/api/v1/calls/incoming/${this.user!.id}`);
-    
-    stream.onmessage = (event: MessageEvent) => {
-      console.log('SSE Message:', event.data); 
-    };
-  }
-
-private async createCallOffer(calleeId: string) {
-  console.log('[1] Starting createCallOffer for:', calleeId);
-
-
-
-  
-  try {
+  public async createCallOffer (calleeId: string) {
     this.lc = new RTCPeerConnection(this.config);
-    console.log('[2] PeerConnection created');
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    stream.getTracks().forEach((track) => {
-    this.lc!.addTrack(track, stream);
-    });
-    const offer = await this.lc.createOffer();
-    console.log('[3] Offer created:', offer);
+    this.chatContext.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
 
-    await this.lc.setLocalDescription(offer);
-    console.log('[4] Local description set');
-
-    const lc = this.lc;
-    
-    await new Promise<void>((resolve, reject) => {
-      console.log('[5] Waiting for ICE candidates');
-      
-      if (!lc) {
-        console.error('[5a] PeerConnection is null');
-        reject(new Error('RTCPeerConnection is null'));
-        return;
+    this.chatContext.localStream.getTracks().forEach((track) => {
+      if (this.chatContext.localStream) {
+        this.lc?.addTrack(track, this.chatContext.localStream);
       }
+    });
 
-      lc.onicecandidate = (event) => {
-        console.log('[6] ICE candidate event:', event.candidate);
-        
-        if (event.candidate === null) {
-          console.log('[7] All ICE candidates gathered');
+    this.lc.ontrack = (event) => {
+      if (!this.chatContext.remoteStream) {
+        this.chatContext.remoteStream = new MediaStream();
+      }
+      this.chatContext.remoteStream.addTrack(event.track);
+    };
+
+    const offer = await this.lc.createOffer();
+    await this.lc.setLocalDescription(offer);
+
+    await new Promise<void>(resolve => {
+      this.lc!.onicecandidate = (event) => {
+        if (event.candidate === null) { 
           this.offer = this.lc!.localDescription;
-          console.log('[8] Final offer:', this.offer);
+          console.log('OFFER SDP:', this.offer)
           resolve();
         }
       };
-
-      // Add error handling
-        lc.onicecandidateerror = (event) => {
-        console.warn('[ICE candidate error]', event);
-        // Only reject if serious
-        if (event.errorCode >= 701) {
-            reject(new Error(`Serious ICE candidate error: ${event.errorText}`));
-        }
-        };
-
-        this.lc!.onicegatheringstatechange = () => {
-        console.log('ICE Gathering State:', this.lc!.iceGatheringState);
-        };
-
-
-      
-      // Add timeout as fallback
-    setTimeout(() => {
-    console.warn('[ICE Timeout] No candidates after 5 seconds');
-    reject(new Error('ICE gathering timed out'));
-    }, 5000);
-
     });
 
-    console.log('[9] Creating outgoing offer payload');
-    const outgoingCallOffer: OutgoingCallOffer = {
-      callerId: this.user?.id!,
+  
+    if (!this.offer) {
+      throw new Error('Failed to create offer');
+    }
+
+    const callOffer: { 
+      callerId: string, 
+      calleeId: string, 
+      sdp: { type: 'offer', sdp: string }
+    } = {
+      callerId: this.profile?.id!,
       calleeId: calleeId,
-      offer: {
-        type: 'offer',
-        sdp: this.offer!.sdp
+      sdp: { type: 'offer', sdp: this.offer.sdp }
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/api/v1/calls/offer', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': this.token!
+        },
+        body: JSON.stringify(callOffer)
+      });
+      const result = await response.json();
+      this.outgoingCall = true;
+      console.log(result)
+      console.log(`Calling user ${callOffer.calleeId}`);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
+  public async createCallAnswer (incomingCallOffer: IncomingCallOffer) {
+    
+    this.rc = new RTCPeerConnection(this.config);
+
+    this.chatContext.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
+    this.chatContext.localStream.getTracks().forEach((track) => {
+      if (this.chatContext.localStream) {
+        this.rc?.addTrack(track, this.chatContext.localStream);
       }
+    });
+
+    this.rc.ontrack = (event) => {
+      if (!this.chatContext.remoteStream) {
+        this.chatContext.remoteStream = new MediaStream();
+      }
+      this.chatContext.remoteStream.addTrack(event.track);
     };
 
-    console.log('[10] Sending offer to server');
-    const response = await fetch('http://localhost:3000/api/v1/calls', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': this.token!,
-      },
-      body: JSON.stringify(outgoingCallOffer),
-    });
-    
-    console.log('[11] Server response status:', response.status);
-    const result = await response.json();
-    console.log('[12] Server response:', result);
+    await this.rc.setRemoteDescription(incomingCallOffer.sdp);
 
-  } catch (error) {
-    console.error('[ERROR] in createCallOffer:', error);
-    throw error;
+    const answer = await this.rc.createAnswer();
+    await this.rc.setLocalDescription(answer);
+
+
+    this.callInProgress = true;
+    this.incomingCall = false;
+
+    await new Promise<void>((resolve) => {
+      this.rc!.onicecandidate = (event) => {
+        if (event.candidate === null) {
+          this.answer = this.rc!.localDescription;
+          console.log('ANSWER SDP:', this.answer);
+          resolve();
+        }
+      };
+    });
+
+    const callAnswer : { 
+      callerId: string, 
+      sdp: { type: 'answer', sdp: string }
+    } = {
+      callerId: incomingCallOffer.callerId,
+      sdp: { type: 'answer', sdp: this.answer!.sdp }
+    };
+
+    try {
+      const response = await fetch('http://localhost:3000/api/v1/calls/answer', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': this.token!
+        },
+        body: JSON.stringify(callAnswer)
+      });
+      console.log(callAnswer);
+      const result = await response.json();
+      console.log(result)
+      console.log(`Answering call from user ${incomingCallOffer.callerName}`);
+    } catch (error) {
+      console.log(error)
+    }
   }
-}
-  render() {
-    return html`<slot></slot>`;
-  }
+
+
+  protected render(): unknown {
+    if (this.incomingCall) {
+      return html`<call-alert .incomingCallOffer=${this.incomingCallOffer}></call-alert>`;
+    }
+
+    if (this.callInProgress && this.chatContext.localStream) {
+      return html`<video-chat 
+        .localStream=${this.chatContext.localStream}
+        .remoteStream=${this.chatContext.remoteStream}>
+      </video-chat>`;
+    }
+
+    if (this.outgoingCall && this.chatContext.localStream) {
+      return html`<video-chat 
+        .localStream=${this.chatContext.localStream}
+        .remoteStream=${this.chatContext.remoteStream}>
+      </video-chat>`;
+    }
+
+    return html `
+      <slot></slot>
+    `;
+  };
 }

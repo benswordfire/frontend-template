@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
 export const IncomingCallOfferSchema = z.object({
-  callerName: z.string().min(1, 'Caller name is required'),
+  callerName: z.string(),
   callerId: z.string().min(1, 'Caller ID is required'),
-  offer: z.object({
-    type: z.literal('offer', { errorMap: () => ({ message: 'Offer type must be "offer"' }) }),
-    sdp: z.string().min(1, 'SDP string is required')
-  }),
+  sdp: z.object({
+    type: z.literal('offer'),
+    sdp: z.string().min(1, 'SDP string is required'),
+  })
 });
 
 export type IncomingCallOffer = z.infer<typeof IncomingCallOfferSchema>;

@@ -27,7 +27,7 @@ export class ErrorProvider extends LitElement {
       newError
     ];
     console.error(error);
-    
+    console.log(newError);
   };
   
   private async clearErrors(): Promise<void> {
@@ -36,7 +36,5 @@ export class ErrorProvider extends LitElement {
 
   render() {
     return html`<slot></slot>`;
-  }
-
-
-}
+  };
+};

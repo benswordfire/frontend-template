@@ -21,6 +21,7 @@ const isAuthenticated = async () => {
 const routes = [
   { path: '/auth/login', component: 'login-page', },
   { path: '/auth/registration', component: 'registration-page' },
+  { path: '/auth/forgot-password', component: 'forgot-password' },
   { path: '/auth/two-factor-auth', component: 'two-factor-auth-page' },
   { path: '/friends', component: 'friends-page' },
   { path: '/settings', component: 'settings-page', 

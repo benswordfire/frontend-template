@@ -62,7 +62,7 @@ export class FriendsList extends LitElement {
   */
   private async fetchAllFriends () {
     try {
-      const response = await fetch('http://localhost:3000/api/v1/account/friends', {
+      const response = await fetch('http://localhost:3000/api/v1/friends', {
         method: 'GET',
         credentials: 'include',
         headers: {

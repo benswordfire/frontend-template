@@ -2,22 +2,23 @@ import { consume } from '@lit/context';
 import { html, LitElement } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import { callContext, CallContext } from '../context/call-context';
+import { chatContext, ChatContext } from '../context/chat-context';
 
 @customElement('video-chat')
 export class VideoChat extends LitElement {
-  @consume({ context: callContext, subscribe: true })
-  @state() private callContext!: CallContext;
+  @consume({ context: chatContext, subscribe: true })
+  @state() private chatContext!: ChatContext;
 
   @query('#localVideo') private localVideo!: HTMLVideoElement;
   @query('#remoteVideo') private remoteVideo!: HTMLVideoElement;
 
   protected updated() {
-    if (this.callContext?.localStream && this.localVideo) {
-      this.localVideo.srcObject = this.callContext.localStream;
+    if (this.chatContext?.localStream && this.localVideo) {
+      this.localVideo.srcObject = this.chatContext.localStream;
     }
 
-    if (this.callContext?.remoteStream && this.remoteVideo) {
-      this.remoteVideo.srcObject = this.callContext.remoteStream;
+    if (this.chatContext?.remoteStream && this.remoteVideo) {
+      this.remoteVideo.srcObject = this.chatContext.remoteStream;
     }
   }
 

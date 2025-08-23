@@ -1,8 +1,8 @@
 import { createContext } from '@lit/context';
-import { FetchParams } from './types/FetchParams';
 
 export interface FetchContext {
-  fetchWithAuth: <T>(params: FetchParams<T>) => Promise<T | undefined>;
+  requestWithAuth: (method: string, endpoint: string, formData?: object) => Promise<any>;
+  _requestWithoutAuth: (method: string, endpoint: string) => Promise<any>;
 }
 
 export const fetchContext = createContext<FetchContext>(Symbol('fetch-context'));

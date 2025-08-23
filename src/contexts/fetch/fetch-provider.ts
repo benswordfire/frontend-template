@@ -1,92 +1,76 @@
 import { html, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { consume, provide } from '@lit/context';
-import { fetchContext, FetchContext } from './fetch-context';
+import { fetchContext } from './fetch-context';
 import { csrfContext } from '../../features/authentication/contexts/csrf/csrf-context';
 import { errorContext, ErrorContext } from '../error/error-context';
-import { FetchParams } from './types/FetchParams';
-import { ApiResult, ApiResultSchema } from './types/ApiResult';
 
 @customElement('fetch-provider')
 export class FetchProvider extends LitElement {
   private readonly API_URL = import.meta.env.VITE_BASE_URL;
-
+  @provide({ context: fetchContext })
+  
   @consume({ context: csrfContext, subscribe: true })
   @state() private _csrfToken: string = '';
 
   @consume({ context: errorContext, subscribe: true })
   @state() private errorContext!: ErrorContext;
 
-  public fetchWithAuth = async <T>({
-    endpoint,
-    data = {},
-    options = {},
-    schema
-  }: FetchParams<T>): Promise<T | undefined> => {
+  public requestWithAuth = async (
+    method: string, 
+    endpoint: string, 
+    formData?: object
+  ) => {
     try {
-      console.log(this._csrfToken)
-      const response = await fetch(`${this.API_URL}/${endpoint}`, {
-        method: options?.method || 'GET',
+      const response = await fetch(`${this.API_URL}${endpoint}`, {
+        method,
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': this._csrfToken || ''
+          'X-CSRF-Token': this._csrfToken,
         },
-        ...options,
-        body: options?.method !== 'GET' ? JSON.stringify(data) : undefined
+        body: method !== 'GET' ? JSON.stringify(formData) : undefined,
       });
-      const json = await response.json();
-
-      if (schema) {
-        const result = schema.safeParse(json.data);
-
-        if (!result.success) {
-console.error('Full Zod error:', result.error);
-console.error('Expected shape:', schema ?? ApiResultSchema);
-console.error('Raw API data:', json.data);
-          this.errorContext?.reportError({
-            message: 'Invalid API response format',
-            detail: result.error.toString(),
-            source: 'fetch-provider',
-            severity: 'high'
-          });
-          return undefined;
-        }
-        return result.data;
-      }
-
-      const result = ApiResultSchema.safeParse(json);
-      
-      if (!result.success) {
-console.error('Full Zod error:', result.error);
-console.error('Expected shape:', schema ?? ApiResultSchema);
-console.error('Raw API data:', json.data);
-        this.errorContext?.reportError({
-          message: 'Invalid API response format',
-          detail: result.error.toString(),
-          source: 'fetch-provider',
-          severity: 'high'
-        });
-        return undefined;
-      }
-      
-      return result.data as T;
-
-    } catch (error: any) {
-      this.errorContext?.reportError({
-        message: error?.message ?? 'Failed to fetch',
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      this.errorContext.reportError({
+        message: 'Request with auth error',
+        detail: error instanceof Error ? error.stack?.toString() : String(error),
         source: 'fetch-provider',
         severity: 'high'
       });
-      return undefined;
+      return { success: false, message: 'Network error' };
     }
-
   };
 
+  public requestWithoutAuth = async (
+    method: string, 
+    endpoint: string
+  ) => {
+    try {
+      const response = await fetch(`${this.API_URL}${endpoint}`, {
+        method,
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      this.errorContext.reportError({
+        message: 'Request without auth error',
+        detail: error instanceof Error ? error.stack?.toString() : String(error),
+        source: 'fetch-provider',
+        severity: 'high'
+      });
+      return { success: false, message: 'Network error' };
+    }
+  };
+  
   @provide({ context: fetchContext })
-  @state()
-  fetchContext: FetchContext = {
-    fetchWithAuth: this.fetchWithAuth
+  private fetchContextValue = {
+    requestWithAuth: this.requestWithAuth.bind(this),
+    requestWithoutAuth: this.requestWithoutAuth.bind(this),
   };
 
   render() {

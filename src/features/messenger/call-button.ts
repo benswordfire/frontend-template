@@ -21,11 +21,11 @@ export class CallButton extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    console.log('CallButton connected, context:', this.callContext);
+    console.log('CallButton connected, context:', this.chatContext);
   }
   
   private async makeCall() {
-    if (!this.callContext) {
+    if (!this.chatContext) {
       console.error('Chat context not available');
       return;
     }
@@ -38,7 +38,7 @@ export class CallButton extends LitElement {
     console.log('Initiating call to:', this.calleeId);
     
     try {
-      await this.callContext.createCallOffer(this.calleeId);
+      await this.chatContext.createCallOffer(this.calleeId);
       console.log('Call initiated successfully');
     } catch (error) {
       console.error('Call failed:', error);

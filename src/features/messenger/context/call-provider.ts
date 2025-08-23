@@ -218,9 +218,9 @@ render() {
     </video-chat>`;
   }
 
-  if (this.incomingCall && this.callContext.incomingCallOffer) {
-    return html`<call-alert .incomingCallOffer=${this.callContext.incomingCallOffer}></call-alert>`;
-  }
+  //if (this.incomingCall && this.callContext.incomingCallOffer) {
+  //  return html`<call-alert .incomingCallOffer=${this.callContext.incomingCallOffer}></call-alert>`;
+  //}
 
   if (this.outgoingCall && this.callContext.localStream) {
     return html`<video-chat 
