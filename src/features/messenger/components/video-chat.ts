@@ -1,7 +1,6 @@
 import { consume } from '@lit/context';
 import { html, LitElement } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
-import { callContext, CallContext } from '../context/call-context';
 import { chatContext, ChatContext } from '../context/chat-context';
 
 @customElement('video-chat')

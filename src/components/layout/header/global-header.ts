@@ -1,9 +1,6 @@
 import { css, html, LitElement } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import { resetStyles } from '../../../styles/reset-styles';
-import { consume } from '@lit/context';
-import { authContext } from '../../../features/authentication/contexts/authentication/auth-context';
-import { User } from '../../../features/authentication/types/User';
 
 @customElement('global-header')
 export class GlobalHeader extends LitElement {
@@ -29,19 +26,6 @@ export class GlobalHeader extends LitElement {
       color: #FFF;
     }
     `, resetStyles];
-
-  @consume({ context: authContext, subscribe: true })
-  @state() user: User | null = null;
-  
-  private async _logout() {
-    try {
-      const response = await fetch('http://localhost:3000/api/v1/auth/logout', {
-        method: 'GET'
-      });
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   render() {
     return html `

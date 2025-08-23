@@ -76,7 +76,7 @@ export class SettingsForm extends LitElement {
         </div>
         <div class="form-group">
           <label for="phone">Email</label>
-          <input type="text" id="phone" name="phone" placeholder=${ifDefined(this.user?.phoneNumber)} />
+          <input type="text" id="phone" name="phone" placeholder=${ifDefined(this.profile?.email)} />
         </div>
         <button type="submit" class="primary">Update</button>
       </form>

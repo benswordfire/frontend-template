@@ -2,7 +2,6 @@ import { css, html, LitElement } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { resetStyles } from '../../styles/reset-styles';
 import { consume } from '@lit/context';
-import { CallContext, callContext } from '../../features/messenger/context/call-context';
 import { IncomingCallOffer } from '../../features/messenger/types/IncomingCallOffer';
 import { chatContext, ChatContext } from '../../features/messenger/context/chat-context';
 

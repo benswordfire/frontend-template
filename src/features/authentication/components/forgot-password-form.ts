@@ -1,9 +1,10 @@
 import { LitElement, html } from 'lit';
-import { customElement, query, state } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { consume } from '@lit/context';
 import { resetStyles } from '../../../styles/reset-styles';
 import { errorContext, ErrorContext } from '../../../contexts/error/error-context';
 import { fetchContext, FetchContext } from '../../../contexts/fetch/fetch-context';
+import { LoginFormDto } from '../types/LoginFormDto';
 
 @customElement('forgot-password')
 export class ForgotPasswordForm extends LitElement {
@@ -18,12 +19,9 @@ export class ForgotPasswordForm extends LitElement {
 
   @state() private errors: Partial<Record<keyof LoginFormDto, string>> = {};
 
-  @query('form') private form!: HTMLFormElement;
-  @query('form-alert') private formAlert!: HTMLElement;
-
   render() {
     return html`
-      <form @submit=${this._handleSubmit} novalidate>
+      <form novalidate>
         <h1 class="logo">kollme</h1>        
         <p style="text-align: center; color: var(--secondary-color);">Login with your credentials.</p>
         <div class="form-group">

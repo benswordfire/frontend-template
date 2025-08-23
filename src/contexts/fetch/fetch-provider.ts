@@ -67,12 +67,6 @@ export class FetchProvider extends LitElement {
     }
   };
   
-  @provide({ context: fetchContext })
-  private fetchContextValue = {
-    requestWithAuth: this.requestWithAuth.bind(this),
-    requestWithoutAuth: this.requestWithoutAuth.bind(this),
-  };
-
   render() {
     return html `<slot></slot>`
   };

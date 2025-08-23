@@ -2,7 +2,6 @@ import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { resetStyles } from '../../styles/reset-styles';
 import { consume } from '@lit/context';
-import { callContext, CallContext } from './context/call-context';
 import { chatContext, ChatContext } from './context/chat-context';
 
 @customElement('call-button')
@@ -12,9 +11,6 @@ export class CallButton extends LitElement {
 
   @consume({ context: chatContext, subscribe: true })
   @state() chatContext?: ChatContext;
-
-  @consume({ context: callContext, subscribe: true })
-  @state() callContext?: CallContext;
 
   @property({ type: String })
   calleeId: string = '';

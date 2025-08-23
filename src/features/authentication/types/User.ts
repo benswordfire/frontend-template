@@ -7,8 +7,7 @@ export const UserSchema = z.object({
   firstName: z.string().nullable().optional(),
   lastName: z.string().nullable().optional(),
   phoneNumber: z.string().nullable().optional(),
-  isPhoneNumberVerified: z
-    .preprocess(val => val ? new Date(val) : null, z.date().nullable()),
+  isPhoneNumberVerified: z.preprocess((val) => new Date(val as string), z.date()), 
   isEmailVerified: z.preprocess((val) => new Date(val as string), z.date()), 
   passwordHash: z.string().optional(),
   isTwoFactorEnabled: z.enum(['email', 'disabled', 'sms']),

@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit';
 import { consume } from '@lit/context';
-import { customElement, property, query, state } from 'lit/decorators.js';
+import { customElement, query, state } from 'lit/decorators.js';
 import { resetStyles } from '../../../styles/reset-styles';
 import { csrfContext } from '../contexts/csrf/csrf-context';
 import { EmailVerificationFormData } from '../types/EmailVerificationFormData';
@@ -12,7 +12,6 @@ export class EmailVerificationForm extends LitElement {
   @consume({ context: csrfContext, subscribe: true })
   @state() private token?: string;
 
-  @state() private email: string = '';
   @state() private emailVerificationToken?: string = '';
 
   @query('form') private form!: HTMLFormElement;

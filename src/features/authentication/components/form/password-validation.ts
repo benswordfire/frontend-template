@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { resetStyles } from '../../../../styles/reset-styles';
 import { classMap } from 'lit/directives/class-map.js';
 

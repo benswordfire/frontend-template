@@ -26,8 +26,6 @@ export class TwoFactorAuthForm extends LitElement {
   @consume({ context: csrfContext, subscribe: true })
   @state() private token: string = '';
 
-  @query('form') private form!: HTMLFormElement;
-
   @state() private tokenPartOne: string = '';
   @state() private tokenPartTwo: string = '';
   @state() private tokenPartThree: string = '';

@@ -1,10 +1,8 @@
 import { consume, provide } from '@lit/context'
 import { html, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { authContext } from '../../authentication/contexts/authentication/auth-context';
 import { User } from '../../authentication/types/User';
 import { chatContext } from './chat-context';
-import { OutgoingCallOffer } from '../types/OutgoingCallOffer';
 import { csrfContext } from '../../authentication/contexts/csrf/csrf-context';
 import { profileContext } from '../../profile/context/profile-context';
 import { IncomingCallOffer } from '../types/IncomingCallOffer';

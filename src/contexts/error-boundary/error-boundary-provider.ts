@@ -15,14 +15,12 @@ export class ErrorBoundary extends LitElement {
     super.connectedCallback();
     window.addEventListener('error', this._handleGlobalError);
     window.addEventListener('unhandledrejection', this._handlePromiseRejection);
-    this.addEventListener('critical-error', this._handleCriticalError);
   }
 
   disconnectedCallback (): void {
     super.disconnectedCallback();
     window.removeEventListener('error', this._handleGlobalError);
     window.removeEventListener('unhandledrejection', this._handlePromiseRejection);
-    this.removeEventListener('critical-error', this._handleCriticalError);
   }
 
   private _handleGlobalError = (event: ErrorEvent) => {
