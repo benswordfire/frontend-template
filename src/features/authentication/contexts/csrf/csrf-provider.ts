@@ -43,7 +43,7 @@ export class CsrfProvider extends LitElement {
 
   private async _fetchCsrfToken () {
     try {
-      const response = await fetch('http://147.93.56.188:3000/api/v1/csrf-token', {
+      const response = await fetch('/api/v1/csrf-token', {
         method: 'GET',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' }
