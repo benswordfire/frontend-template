@@ -12,6 +12,7 @@ export class ProfileProvider extends LitElement {
 
   @consume({ context: fetchContext, subscribe: true })
   @state() fetchContext!: FetchContext;
+  
   private readonly _getUserProfile = async (): Promise<User | undefined> => {
     try {
       const result = await this.fetchContext.requestWithAuth('GET', '/user/profile',);

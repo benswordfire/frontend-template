@@ -7,6 +7,8 @@ import { fetchContext, FetchContext } from '../../../../contexts/fetch/fetch-con
 
 @customElement('csrf-provider')
 export class CsrfProvider extends LitElement {
+  private readonly API_URL = import.meta.env.VITE_BASE_URL;
+
   @provide({ context: csrfContext })
   @state() public token: string | null = null;
   @state() public loading = true;
@@ -43,7 +45,7 @@ export class CsrfProvider extends LitElement {
 
   private async _fetchCsrfToken () {
     try {
-      const response = await fetch('http://147.93.56.188:3000/api/v1/csrf-token', {
+      const response = await fetch(`${this.API_URL}/csrf-token`, {
         method: 'GET',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' }

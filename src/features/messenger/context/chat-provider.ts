@@ -11,6 +11,8 @@ import { IncomingCallAnswer } from '../types/IncomingCallAnswer';
 @customElement('chat-provider')
 export class ChatProvider extends LitElement {
 
+  private readonly API_URL = import.meta.env.VITE_BASE_URL;
+
   @provide({ context: chatContext })
   @state() public chatContext = {
     createCallOffer: this.createCallOffer.bind(this),
@@ -45,7 +47,7 @@ export class ChatProvider extends LitElement {
   private readonly monitorCallTraffic = () => {
     if (!this.profile) return;
     try {
-      const stream = new EventSource(`http://localhost:3000/api/v1/calls/${this.profile?.id}`);
+      const stream = new EventSource(`${this.API_URL}/calls/${this.profile?.id}`);
 
       stream.addEventListener('offer', (event: MessageEvent) => {
         this.incomingCall = true;
@@ -122,7 +124,7 @@ export class ChatProvider extends LitElement {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/v1/calls/offer', {
+      const response = await fetch(`${this.API_URL}/calls/offer`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -187,7 +189,7 @@ export class ChatProvider extends LitElement {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/v1/calls/answer', {
+      const response = await fetch(`${this.API_URL}/calls/answer`, {
         method: 'POST',
         credentials: 'include',
         headers: {
