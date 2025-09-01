@@ -3,9 +3,11 @@ import './pages/auth/LoginPage';
 import './pages/auth/RegistrationPage';
 import './pages/settings/SettingsPage';
 
+
+
 const isAuthenticated = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/v1/auth/status', {
+    const response = await fetch('https://kollme.com/api/v1/auth/status', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
