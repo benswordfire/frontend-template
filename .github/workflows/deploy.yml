@@ -1,0 +1,28 @@
+name: Deploy Frontend to VPS
+
+on:
+  push:
+    branches:
+      - main   # only deploy from main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy Frontend to VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no root@147.93.56.188 << 'EOF'
+            cd /var/www/webrtc-frontend
+            git pull origin main
+            npm install
+            npm run build
+          EOF
