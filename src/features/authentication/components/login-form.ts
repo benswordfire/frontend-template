@@ -13,6 +13,8 @@ import { showFormAlert } from '../../../utils/form/showFormAlert';
 @customElement('login-form')
 export class LoginForm extends LitElement {
 
+  private readonly API_URL = import.meta.env.VITE_BASE_URL;
+
   static styles = [resetStyles];
 
   @consume({ context: fetchContext, subscribe: true })
@@ -90,7 +92,7 @@ export class LoginForm extends LitElement {
         <button type="submit" class="primary">Let's go!</button>
         <p style="font-size: 0.9rem; text-align: center;">New here? <a href="/auth/registration" class="router-link">Create an account.</a></p>
       </form>
-      <a href="http://localhost:3000/api/v1/auth/google">Sign in with Google</a>
+      <a href="${this.API_URL}/auth/google">Sign in with Google</a>
     `;
   }
 }
