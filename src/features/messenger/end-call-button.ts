@@ -1,5 +1,5 @@
 import { LitElement, html } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { resetStyles } from '../../styles/reset-styles';
 import { consume } from '@lit/context';
 import { chatContext, ChatContext } from './context/chat-context';
