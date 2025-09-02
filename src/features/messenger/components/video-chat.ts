@@ -34,7 +34,7 @@ export class VideoChat extends LitElement {
             object-fit: cover;
           "
         ></video>
-
+        <end-call-button style="position: absolute; bottom: 1rem; left: 1rem;"></end-call-button>
         <video
           id="localVideo"
           autoplay

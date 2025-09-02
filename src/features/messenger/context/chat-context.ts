@@ -4,6 +4,7 @@ import { IncomingCallOffer } from '../types/IncomingCallOffer';
 export interface ChatContext {
   createCallOffer: (calleeId: string) => Promise<void>;
   createCallAnswer: (incomingCallOffer: IncomingCallOffer) => Promise<void>;
+  hangupCall: () => Promise<void>;
   localStream: MediaStream | null;
   remoteStream: MediaStream | null;
 }

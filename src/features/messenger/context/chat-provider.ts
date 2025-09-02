@@ -17,6 +17,7 @@ export class ChatProvider extends LitElement {
   @state() public chatContext = {
     createCallOffer: this.createCallOffer.bind(this),
     createCallAnswer: this.createCallAnswer.bind(this),
+    hangupCall: this.hangupCall.bind(this),
     localStream: null as MediaStream | null,
     remoteStream: null as MediaStream | null,
   }
@@ -209,6 +210,24 @@ export class ChatProvider extends LitElement {
     } catch (error) {
       console.log(error)
     }
+  }
+
+  public async hangupCall () {
+    if (this.lc) {
+      this.lc.close();
+    }
+
+    if (this.chatContext.localStream) {
+      this.chatContext.localStream.getTracks().forEach(track => track.stop());
+    }
+
+    if (this.chatContext.remoteStream) {
+      this.chatContext.remoteStream.getTracks().forEach(track => track.stop());
+    }
+
+    this.callInProgress = false;
+    this.incomingCall = false;
+    this.outgoingCall = false;
   }
 
 
