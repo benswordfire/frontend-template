@@ -69,6 +69,10 @@ export class ChatProvider extends LitElement {
         }
       });
 
+      stream.addEventListener('heartbeat', (event) => {
+        console.log('Heartbeat:', event.data)
+      });
+
       stream.onmessage = (event: MessageEvent) => {
         console.log('SSE Message:', event.data); 
       };
