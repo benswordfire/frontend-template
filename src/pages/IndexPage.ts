@@ -7,7 +7,7 @@ export class IndexPage extends LitElement {
   render() {
     return html`
       <main style="height: 100dvh; display: flex; justify-content: center; align-items: center; flex-direction: column;">
-        <h1 style="font-size: 36px; font-weight: 600; font-family: 'DynaPuff', 'sans-serif'; text-align: center; color: var(--color-primary);">The video chat<br> we deserve.</h1>
+        <h1 style="font-size: 36px; font-weight: 600; font-family: 'DynaPuff', 'sans-serif'; text-align: center; color: var(--color-primary);">The video chat we deserve.</h1>
         <p>FaceTime without the fruit company.</p>
         <a 
         href="/auth/login" 
