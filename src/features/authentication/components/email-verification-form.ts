@@ -2,60 +2,74 @@ import { LitElement, html } from 'lit';
 import { consume } from '@lit/context';
 import { customElement, query, state } from 'lit/decorators.js';
 import { resetStyles } from '../../../styles/reset-styles';
-import { csrfContext } from '../contexts/csrf/csrf-context';
-import { EmailVerificationFormData } from '../types/EmailVerificationFormData';
+import { FetchContext, fetchContext } from '../../../contexts/fetch/fetch-context';
+import { errorContext, ErrorContext } from '../../../contexts/error/error-context';
+import { EmailVerificationFormDto, EmailVerificationFormSchemaDto } from '../types/EmailVerificationFormDto';
+import { extractFormData } from '../../../utils/validation/extractFormData';
+import { validateFormData } from '../../../utils/validation/validateFormData';
+import { showFormAlert } from '../../../utils/form/showFormAlert';
 
 @customElement('email-verification-form')
 export class EmailVerificationForm extends LitElement {
+
   static styles = [resetStyles];
 
-  @consume({ context: csrfContext, subscribe: true })
-  @state() private token?: string;
+  @consume({ context: fetchContext, subscribe: true })
+  @state() fetchContext!: FetchContext;
+
+  @consume({ context: errorContext, subscribe: true })
+  @state() errorContext!: ErrorContext;
 
   @state() private emailVerificationToken?: string = '';
 
-  @query('form') private form!: HTMLFormElement;
+  @state() private errors: Partial<Record<keyof EmailVerificationFormDto, string>> = {};
 
-  connectedCallback() {
+  @query('form') private form!: HTMLFormElement;
+  @query('form-alert') private formAlert!: HTMLElement;
+
+  connectedCallback(): void {
     super.connectedCallback();
     const params = new URLSearchParams(window.location.search);
     this.emailVerificationToken = params.get('token')!;
   }
 
   updated(changedProps: Map<string | number | symbol, unknown>) {
-    if (changedProps.has('token') && this.token && this.emailVerificationToken) {
-      this.handleSubmit();
+    if (changedProps.has('emailVerificationToken') && this.emailVerificationToken) {
+      this._handleSubmit();
     }
   }
 
-
-  private async handleSubmit() {
-    console.log('TÜKEN', this.token)
-    const data: EmailVerificationFormData = { token: this.emailVerificationToken!, _csrf: this.token! };
-
+  private async _handleSubmit () {
     try {
-      console.log(data)
-      const response = await fetch('http://localhost:3000/api/v1/auth/email-verification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': this.token || ''
-        },
-        body: JSON.stringify(data),
-        credentials: 'include',
-      });
-      const result = await response.json();
-      console.log(result)
+      const formData = extractFormData<EmailVerificationFormDto>(this.form);
 
-      if (result.success) {
-        const message = document.createElement('form-alert');
-        message.setAttribute('alertType', 'error');
-        message.setAttribute('alertMessage', result.message);
-        this.form.prepend(message);
+      const validation = validateFormData(formData, EmailVerificationFormSchemaDto);
+
+      if (validation.errors) {
+        this.errors = validation.errors;
+        return;
       }
 
+      const result = await this.fetchContext.requestWithAuth('POST', '/auth/verify-email', validation.parsed?.data);
+
+      if (this.formAlert) {
+        this.formAlert.remove();
+      }
+
+      const alert = showFormAlert(result.success, result.message);
+      this.form.prepend(alert);
     } catch (error) {
-      console.log(error);
+      this.errorContext.reportError({
+        message: 'Email verification form error',
+        detail: error instanceof Error ? error.stack?.toString() : String(error),
+        source: 'email-verification-form',
+        severity: 'high'
+      });
+      if (this.formAlert) {
+        this.formAlert.remove();
+      }
+      const alert = showFormAlert(false, 'Something went wrong. Please try again.');
+      this.form.prepend(alert);
     }
   }
 
