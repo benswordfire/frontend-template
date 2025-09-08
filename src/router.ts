@@ -2,6 +2,7 @@ import { Router } from '@vaadin/router';
 import './pages/auth/LoginPage';
 import './pages/auth/RegistrationPage';
 import './pages/settings/SettingsPage';
+import './pages/auth/EmailVerificationPage'
 
 
 
