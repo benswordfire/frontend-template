@@ -76,6 +76,7 @@ export class EmailVerificationForm extends LitElement {
   render() {
     return html`
       <form>
+        ${this.errors.token}
         <h1 class="logo">Success!</h1>
         <p style="text-align: center; color: var(--secondary-color);">Successful verification, you can login to your account now!</p>
         <a href="/auth/login" class="button-link">Proceed to login</a>
