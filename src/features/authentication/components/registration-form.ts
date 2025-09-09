@@ -74,7 +74,12 @@ export class RegistrationForm extends LitElement {
         </div>
         <div class="form-group">
           <label for="email">Password</label>
-          <input type="password" id="password" name="password" autocomplete="off" />
+          <input type="password" id="password" name="password" autocomplete="off" 
+            @input=${(e: Event) => { 
+              const target = e.target as HTMLInputElement;
+              this.password = target.value; // update the state
+            }}
+          />
         </div>
         <password-validation password="${this.password}"></password-validation>
         <button type="submit" class="primary" >Create a new account!</button>
