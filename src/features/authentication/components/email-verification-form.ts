@@ -4,9 +4,6 @@ import { customElement, query, state } from 'lit/decorators.js';
 import { resetStyles } from '../../../styles/reset-styles';
 import { FetchContext, fetchContext } from '../../../contexts/fetch/fetch-context';
 import { errorContext, ErrorContext } from '../../../contexts/error/error-context';
-import { EmailVerificationFormDto, EmailVerificationFormSchemaDto } from '../types/EmailVerificationFormDto';
-import { extractFormData } from '../../../utils/validation/extractFormData';
-import { validateFormData } from '../../../utils/validation/validateFormData';
 import { showFormAlert } from '../../../utils/form/showFormAlert';
 
 @customElement('email-verification-form')
@@ -21,8 +18,6 @@ export class EmailVerificationForm extends LitElement {
   @state() errorContext!: ErrorContext;
 
   @state() private emailVerificationToken?: string = '';
-
-  @state() private errors: Partial<Record<keyof EmailVerificationFormDto, string>> = {};
 
   @query('form') private form!: HTMLFormElement;
   @query('form-alert') private formAlert!: HTMLElement;
@@ -41,17 +36,9 @@ export class EmailVerificationForm extends LitElement {
 
   private async _handleSubmit () {
     try {
-      const formData = extractFormData<EmailVerificationFormDto>(this.form);
 
-      const validation = validateFormData(formData, EmailVerificationFormSchemaDto);
-
-      if (validation.errors) {
-        this.errors = validation.errors;
-        return;
-      }
-
-      const result = await this.fetchContext.requestWithAuth('POST', '/auth/verify-email', validation.parsed?.data);
-
+      const result = await this.fetchContext.requestWithAuth('POST', '/auth/verify-email', { token: this.emailVerificationToken });
+      console.log(result)
       if (this.formAlert) {
         this.formAlert.remove();
       }
@@ -76,7 +63,6 @@ export class EmailVerificationForm extends LitElement {
   render() {
     return html`
       <form>
-        ${this.errors.token}
         <h1 class="logo">Success!</h1>
         <p style="text-align: center; color: var(--secondary-color);">Successful verification, you can login to your account now!</p>
         <a href="/auth/login" class="button-link">Proceed to login</a>
