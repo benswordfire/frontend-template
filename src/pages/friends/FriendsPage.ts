@@ -18,7 +18,18 @@ export class FriendsPage extends LitElement {
       display: flex; 
       align-items: center;"
       >
-        <friends-list style="width: 100%"></friends-list>
+        <friend-search style="width: 100%;"></friend-search>
+        <sl-tab-group style="width: 100%;">
+          <sl-tab slot="nav" panel="accepted">Friends</sl-tab>
+          <sl-tab slot="nav" panel="pending">Friend request</sl-tab>
+          <sl-tab-panel name="accepted">
+            <friends-list style="width: 100%;"></friends-list>
+          </sl-tab-panel>
+          <sl-tab-panel name="pending">
+            <friends-list-pending></friends-list-pending>
+          </sl-tab-panel>
+        </sl-tab-group>
+
       </main>
     `;
   }

@@ -10,6 +10,7 @@ export class FriendsListElement extends LitElement {
   @property() private name = '';
   @property() private email = '';
   @property() private calleeId = '';
+  @property() private status = ''
 
   render() {
     return html `
@@ -19,7 +20,8 @@ export class FriendsListElement extends LitElement {
           <div>
             <p style="font-size: 16px;">${this.name}</p>
             <p style="font-size: 16px;">${this.email}</p>
-            <p style="font-size: 12px; font-weight: 400; color: #40505b">Koll me bro, ASAP</p>
+            <p style="font-size: 16px;">${this.calleeId}</p>
+            <p style="font-size: 16px;">${this.status}</p>
           </div>
         </div>
         <call-button calleeId=${this.calleeId}></call-button>
