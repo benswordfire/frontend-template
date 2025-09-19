@@ -36,22 +36,30 @@ export class FriendsListPending extends LitElement {
     }
   };
 
-  private readonly isOwnRequest = (requesterId: string, profileId: string) => {
-    return requesterId.trim().toLowerCase() === profileId.trim().toLowerCase();
-  };
-
-
   render() {
     return html`
-    <ul style="display: flex; flex-direction: column; gap: 1rem;">
-      ${this.friends.map((friend) => 
-      html `
-        <friends-list-element name=${ifDefined(friend.username)} calleeId=${ifDefined(friend.friendId)} status=${ this.isOwnRequest(this.profile!.id, friend.requesterId) ? 'Request sent' : 'Wanna be friends'}>
-        </friends-list-element>
-        `
-      )}
-    </ul>
+      <ul>
+        ${this.friends.map((friend) => {
+          console.log(
+            'profile.id:', this.profile?.id,
+            'requesterId:', friend.requesterId,
+            'username:', friend.username
+          );
+          return html`
+            <friends-list-pending-element
+              name=${ifDefined(friend.username)}
+              requesterId=${ifDefined(friend.requesterId)}
+              status=${this.profile?.id === friend.requesterId
+                ? 'Request sent'
+                : 'Wanna be friends'}
+            >
+            </friends-list-pending-element>
+          `;
+        })}
+      </ul>
     `;
   }
+
+
 }
 
