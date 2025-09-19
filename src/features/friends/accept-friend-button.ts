@@ -3,8 +3,6 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { resetStyles } from '../../styles/reset-styles';
 import { fetchContext, FetchContext } from '../../contexts/fetch/fetch-context';
 import { consume } from '@lit/context';
-import { User } from '../authentication/types/User';
-import { profileContext } from '../profile/context/profile-context';
 
 @customElement('accept-friend-button')
 export class AcceptFriendButton extends LitElement {
