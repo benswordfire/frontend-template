@@ -17,6 +17,8 @@ export class ChatProvider extends LitElement {
   @state() public chatContext = {
     createCallOffer: this.createCallOffer.bind(this),
     createCallAnswer: this.createCallAnswer.bind(this),
+    disableLocalMicrophone: this.disableLocalMicrophone.bind(this),
+    disableLocalCamera: this.disableLocalCamera.bind(this),
     hangupCall: this.hangupCall.bind(this),
     localStream: null as MediaStream | null,
     remoteStream: null as MediaStream | null,
@@ -230,6 +232,21 @@ export class ChatProvider extends LitElement {
     this.outgoingCall = false;
   }
 
+  public async disableLocalMicrophone(disable: boolean) {
+    if (this.chatContext.localStream) {
+      this.chatContext.localStream.getAudioTracks().forEach(track => {
+        track.enabled = !disable;
+      });
+    }
+  }
+
+  public async disableLocalCamera(disable: boolean) {
+    if (this.chatContext.localStream) {
+      this.chatContext.localStream.getVideoTracks().forEach(track => {
+        track.enabled = !disable;
+      });
+    }
+  }
 
   protected render(): unknown {
     if (this.incomingCall) {

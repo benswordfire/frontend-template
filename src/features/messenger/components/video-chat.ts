@@ -24,33 +24,9 @@ export class VideoChat extends LitElement {
   render() {
     return html`
       <div style="position: relative; width: 100%; height: 100vh; background: black; display: flex; justify-content: center; align-items: center;">
-        <video
-          id="remoteVideo"
-          autoplay
-          playsinline
-          style="
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          "
-        ></video>
-        <end-call-button style="position: absolute; bottom: 1rem; left: 1rem;"></end-call-button>
-        <video
-          id="localVideo"
-          autoplay
-          playsinline
-          muted
-          style="
-            position: absolute;
-            bottom: 1rem;
-            right: 1rem;
-            width: 20%;
-            max-width: 200px;
-            border-radius: 8px;
-            object-fit: cover;
-            background: black;
-          "
-        ></video>
+        <video id="remoteVideo" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+        <call-control-panel style="position: absolute; bottom: 1rem; left: 1rem;"></call-control-panel>
+        <video id="localVideo" autoplay playsinline muted style="position: absolute; bottom: 1rem; right: 1rem; width: 20%; max-width: 200px; border-radius: 8px; object-fit: cover; background: black;"></video>
       </div>
     `;
   }

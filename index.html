@@ -20,6 +20,10 @@
     <script type="module" src="./src/features/settings/components/settings-form.ts"></script>
     <script type="module" src="./src/components/notifications/form-alert.ts"></script>
     <script type="module" src="./src/components/notifications/toast-message.ts"></script>
+    <script type="module" src="./src/features/messenger/call-control-panel.ts"></script>
+    <script type="module" src="./src/features/messenger/disable-camera-button.ts"></script>
+    <script type="module" src="./src/features/messenger/disable-microphone-button.ts"></script>
+    <script type="module" src="./src/features/messenger/end-call-button.ts"></script>
     <script type="module" src="./src/pages/IndexPage.ts"></script>
     <script type="module" src="./src/pages/auth/LoginPage.ts"></script>
     <script type="module" src="./src/pages/auth/TwoFactorAuthPage.ts"></script>
@@ -37,7 +41,6 @@
     <script type="module" src="./src/features/friends/add-friend-button.ts"></script>
     <script type="module" src="./src/features/friends/friend-search-result-element.ts"></script>
     <script type="module" src="./src/pages/friends/FriendsPage.ts"></script>
-    <script type="module" src="./src/features/messenger/end-call-button.ts"></script>
     <script type="module" src="./src/features/messenger/call-button.ts"></script>
     <script type="module" src="./src/components/layout/header/global-header.ts"></script>
     <script type="module" src="./src/components/notifications/call-alert.ts"></script>
@@ -45,17 +48,16 @@
     <script type="module" src="./src/pages/messenger/VideoChatPage.ts"></script>
   </head>
   <body>
-  <error-provider>
-    <csrf-provider>
-      <fetch-provider>
-        <profile-provider>
-          <chat-provider>
-            <div id="app"></div>
-          </chat-provider>
-        </profile-provider>
-      </fetch-provider>
-    </csrf-provider>
-  </error-provider>
+    <error-provider>
+      <csrf-provider>
+        <fetch-provider>
+          <profile-provider>
+            <chat-provider>
+              <div id="app"></div>
+            </chat-provider>
+          </profile-provider>
+        </fetch-provider>
+      </csrf-provider>
+    </error-provider>
   </body>
-  
 </html>
